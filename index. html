@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لعبة مستكشف المهن - Career Explorer</title>
+    <style>
+        :root {
+            --primary: #4a90e2;
+            --secondary: #f5a623;
+            --success: #7ed321;
+            --bg: #f0f8ff;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        #game-container {
+            background: white;
+            padding: 30px;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 90%;
+            max-width: 600px;
+            border: 5px solid var(--primary);
+        }
+        .job-icon { font-size: 80px; margin-bottom: 20px; display: block; }
+        .question-box { font-size: 24px; color: #333; margin-bottom: 20px; }
+        .options { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        button {
+            padding: 15px;
+            font-size: 18px;
+            cursor: pointer;
+            border: none;
+            border-radius: 15px;
+            background: var(--primary);
+            color: white;
+            transition: transform 0.2s, background 0.2s;
+        }
+        button:hover { transform: scale(1.05); background: #357abd; }
+        #feedback {
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 22px;
+            min-height: 30px;
+        }
+        .stars { color: var(--secondary); font-size: 30px; }
+        #next-btn { background: var(--success); display: none; margin-top: 20px; width: 100%; }
+        .progress { font-size: 14px; color: #888; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div class="progress" id="progress">المستوى: 1 / 10</div>
+    <div id="game-content">
+        <span class="job-icon" id="job-icon">👩‍🚀</span>
+        <div class="question-box" id="question">Where does the <b>Astronaut</b> work?</div>
+        <div class="options" id="options">
+            </div>
+        <div id="feedback"></div>
+        <button id="next-btn" onclick="nextLevel()">المستوى التالي ➔</button>
+    </div>
+</div>
+
+<script>
+    const levels = [
+        { icon: "👩‍🚀", job: "Astronaut", q: "Where does she work?", options: ["In Space", "In a Hospital"], correct: 0, feedback: "Excellent! To the stars! ⭐" },
+        { icon: "🏗️", job: "Architect", q: "What does he do?", options: ["Designs buildings", "Cooks food"], correct: 0, feedback: "Great! You are a builder! 🏗️" },
+        { icon: "👩‍🍳", job: "Cook", q: "Where does she work?", options: ["In a school", "In a Kitchen"], correct: 1, feedback: "Yummy! Correct! 🍕" },
+        { icon: "👨‍✈️", job: "Pilot", q: "What does he do?", options: ["Flies a plane", "Fixes cars"], correct: 0, feedback: "High in the sky! Good job! ✈️" },
+        { icon: "💻", job: "Computer Technician", q: "Where does he work?", options: ["On a farm", "In a tech office"], correct: 1, feedback: "You are a tech genius! 💻" },
+        { icon: "👨‍🌾", job: "Farmer", q: "What does he do?", options: ["Grows crops", "Teaches kids"], correct: 0, feedback: "Healthy food! Correct! 🥕" },
+        { icon: "👨‍🚒", job: "Firefighter", q: "Where does he work?", options: ["At a fire station", "At the zoo"], correct: 0, feedback: "A real hero! 🚒" },
+        { icon: "👨‍💼", job: "Businessman", q: "What does he do?", options: ["Manages a business", "Cleans the street"], correct: 0, feedback: "Successful answer! 💼" },
+        { icon: "👨‍🏫", job: "Teacher", q: "Where does he work?", options: ["In a plane", "In a school"], correct: 1, feedback: "Amazing! Teachers love you! 📖" },
+        { icon: "👨‍⚕️", job: "Doctor", q: "What does he do?", options: ["Helps sick people", "Sells toys"], correct: 0, feedback: "Hero in white! Correct! 🏥" }
+    ];
+
+    let currentLevel = 0;
+
+    function loadLevel() {
+        const level = levels[currentLevel];
+        document.getElementById('progress').innerText = `المستوى: ${currentLevel + 1} / 10`;
+        document.getElementById('job-icon').innerText = level.icon;
+        document.getElementById('question').innerHTML = `${level.q} <br><small>(${level.job})</small>`;
+        
+        const optionsDiv = document.getElementById('options');
+        optionsDiv.innerHTML = '';
+        level.options.forEach((opt, index) => {
+            const btn = document.createElement('button');
+            btn.innerText = opt;
+            btn.onclick = () => checkAnswer(index);
+            optionsDiv.appendChild(btn);
+        });
+        
+        document.getElementById('feedback').innerText = '';
+        document.getElementById('next-btn').style.display = 'none';
+    }
+
+    function checkAnswer(selected) {
+        const level = levels[currentLevel];
+        const feedbackDiv = document.getElementById('feedback');
+        if (selected === level.correct) {
+            feedbackDiv.style.color = "green";
+            feedbackDiv.innerText = level.feedback;
+            document.getElementById('next-btn').style.display = 'block';
+        } else {
+            feedbackDiv.style.color = "red";
+            feedbackDiv.innerText = "Try again! 🤔";
+        }
+    }
+
+    function nextLevel() {
+        currentLevel++;
+        if (currentLevel < levels.length) {
+            loadLevel();
+        } else {
+            document.getElementById('game-content').innerHTML = `
+                <div class="stars">⭐⭐⭐</div>
+                <h2>تهانينا يا مستكشف!</h2>
+                <p>لقد أتممت جميع المهن بنجاح!</p>
+                <button onclick="location.reload()">العب مرة أخرى</button>
+            `;
+        }
+    }
+
+    loadLevel();
+</script>
+
+</body>
+</html>
